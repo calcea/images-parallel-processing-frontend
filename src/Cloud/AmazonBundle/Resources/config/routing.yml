@@ -1,0 +1,3 @@
+cloud_amazon_homepage:
+    path:     /cloud
+    defaults: { _controller: CloudAmazonBundle:Default:index }
