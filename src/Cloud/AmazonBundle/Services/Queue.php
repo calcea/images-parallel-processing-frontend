@@ -41,9 +41,23 @@ class Queue
         $result = $this->client->receiveMessage(array(
             'QueueUrl' => self::QUEUE_URL
         ));
-        foreach ($result->toArray()['Messages'] as $message) {
-            $data[] = array('body' => $message['Body'], 'messageId' => $message['MessageId']);
+        $resultArray = $result->toArray();
+        if (!isset($resultArray['Messages'])) {
+            return array();
         }
+        foreach ($resultArray['Messages'] as $message) {
+            $data[] = array('body' => $message['Body'], 'receipt' => $message['ReceiptHandle']);
+        }
+        return $data;
+    }
+
+    public function deleteMessage($receiptHandle)
+    {
+        $result = $this->client->deleteMessage(array(
+            'QueueUrl' => self::QUEUE_URL,
+            'ReceiptHandle' => $receiptHandle
+        ));
+        return $result->toArray();
     }
 
 }
