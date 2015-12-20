@@ -1,3 +1,7 @@
+image:
+    resource: "@ImageBundle/Resources/config/routing.yml"
+    prefix:   /
+
 cloud_amazon:
     resource: "@CloudAmazonBundle/Resources/config/routing.yml"
     prefix:   /

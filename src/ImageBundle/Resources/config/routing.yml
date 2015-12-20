@@ -1,0 +1,3 @@
+image_homepage:
+    path:     /upload-photo
+    defaults: { _controller: ImageBundle:Photo:upload }
