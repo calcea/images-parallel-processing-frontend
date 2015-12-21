@@ -23,35 +23,31 @@ class S3{
             ));
     }
 
-    public function uploadPhoto($path = null,$filename )
+    public function uploadPhoto($path,$photoId )
     {
         $result = $this->client->putObject(array(
             'Bucket'     => self::BUCKET_NAME,
-            'Key'        => $filename,
-            'SourceFile' => 'C:\Users\Naty\Downloads\photo.jpg',
-            'ACL'          => 'public-read',
-            'Metadata'   => array(
-                'Foo' => 'abc',
-                'Baz' => '123'
-            )
+            'Key'        => $photoId,
+            'Body'       => fopen($path, 'r'),
+            'ACL'          => 'public-read'
         ));
         dump($result);
         return $result;
     }
 
-    public function deletePhoto($fileName){
+    public function deletePhoto($photoId){
         $result = $this->client->deleteObject(array(
             'Bucket' => self::BUCKET_NAME,
-            'Key' => $fileName
+            'Key' => $photoId
         ));
         dump($result);
         return $result;
     }
 
-    public function getPhoto($fileName){
+    public function getPhoto($photoId){
        $result = $this->client->getObject(array(
             'Bucket' => self::BUCKET_NAME,
-            'Key' => $fileName
+            'Key' => $photoId
         ));
         dump($result);
         return $result;
