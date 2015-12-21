@@ -31,8 +31,8 @@ class S3{
             'Body'       => fopen($path, 'r'),
             'ACL'          => 'public-read'
         ));
-        dump($result);
-        return $result;
+
+        return $result["ObjectURL"];
     }
 
     public function deletePhoto($photoId){
@@ -40,7 +40,7 @@ class S3{
             'Bucket' => self::BUCKET_NAME,
             'Key' => $photoId
         ));
-        dump($result);
+
         return $result;
     }
 
@@ -49,7 +49,7 @@ class S3{
             'Bucket' => self::BUCKET_NAME,
             'Key' => $photoId
         ));
-        dump($result);
+     
         return $result;
     }
 }

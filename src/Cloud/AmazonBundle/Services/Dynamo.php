@@ -21,17 +21,15 @@ class Dynamo
     const GREATER_THAN = 'GT';
     const CONTAINS = 'CONTAINS';
     const NOT_CONTAINS = 'NOT_CONTAINS';
+    const DB_NAME = 'ImageProcessingDB';
 
     protected $client = null;
     protected $tableName = null;
     protected $builder = null;
 
-    public function __construct(DataBuilderAbstract $builder, $tableName)
+    public function __construct(DataBuilderAbstract $builder)
     {
-        if (empty($tableName)) {
-            throw new \Exception("You must send the table name");
-        }
-        $this->tableName = $tableName;
+        $this->tableName = self::DB_NAME;
         $this->builder = $builder;
         $this->client = DynamoDbClient::factory(
             array(
