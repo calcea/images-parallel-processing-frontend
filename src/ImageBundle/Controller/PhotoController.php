@@ -4,12 +4,14 @@ namespace ImageBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use ImageBundle\Form\ImageUploadForm;
 use Cloud\AmazonBundle\Services\S3;
 use Cloud\AmazonBundle\Services\Queue;
 use Cloud\AmazonBundle\Services\Dynamo;
 use Cloud\AmazonBundle\Entity\Dynamo\PhotoItemBuilder;
+use Symfony\Component\HttpFoundation\Cookie;
 
 class PhotoController extends Controller
 {
@@ -26,8 +28,8 @@ class PhotoController extends Controller
 
         $form->handleRequest($request);
         if($form->isValid()){
+            $userId =$this->getUserId($request);
             $photoId = md5(rand(999, 10000) . microtime() . "12345678910");
-            $userId = 8;
             $uploadedFile = $form->getData()['imageUpload'];
 
             $s3Url = $this->addToS3($uploadedFile,$photoId);
@@ -51,8 +53,10 @@ class PhotoController extends Controller
 
         $uploadedFile->move("./photo", $photoId . "." . $uploadedFile->getClientOriginalExtension());
         $photoPath = "./photo/".$photoId.".".$uploadedFile->getClientOriginalExtension();
+
         $s3Url = $s3->uploadPhoto($photoPath,$photoId);
-        //TODO: unlink photo from local
+        //TODO permission denied
+//        unlink(realpath($photoPath));
         return $s3Url;
     }
 
@@ -85,5 +89,30 @@ class PhotoController extends Controller
 
         $dynamo = new Dynamo(new PhotoItemBuilder(),'ImageProcessingDB');
         $dynamo->addItem($photoItem);
+    }
+
+    /**
+     * Get user id from cookie.
+     * If not exist user id in cookie then create a new cookie with user id and return a new user id.
+     * If exist user id in cookie then return user id from cookie.
+     *
+     * @param Request $request
+     * @return string
+     */
+    protected function getUserId(Request $request){
+
+        $currentCookies = $request->cookies;
+
+        if($currentCookies->has('USER_ID')){
+            return $currentCookies->get(('USER_ID'));
+        }else{
+            $response = new Response();
+            $userIdValue = md5(rand(999, 10000) . microtime() . "12345678910");
+            $response->headers->setCookie(new Cookie('USER_ID', $userIdValue, time() + (3600 * 48)));
+            dump($response);
+            $response->send();
+            return $userIdValue;
+        }
+
     }
 }

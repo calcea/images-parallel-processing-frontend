@@ -49,7 +49,7 @@ class S3{
             'Bucket' => self::BUCKET_NAME,
             'Key' => $photoId
         ));
-     
+
         return $result;
     }
 }
