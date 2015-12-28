@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+        <button class="btn btn-danger center-block"><a href="{{ path('upload_photo') }}">UPLOAD NEW PHOTO</a></button>
+        <div id="photos" style="padding-top: 25px">
+            {% for photo in photos %}
+                <a href="{{ photo.path_to_s3 }}" target="_blank">
+                    <img src="{{ photo.path_to_s3 }}" width="200px" height="200px">
+                </a>
+            {% endfor %}
+        </div>
+{% endblock %}

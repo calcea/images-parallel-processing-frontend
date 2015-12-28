@@ -9,6 +9,10 @@
                 <br>
                 {{ form_row (form.submit, { attr: {class :"form-control btn btn-danger" } }) }}
             {{ form_end(form) }}
+            <div style="padding-top: 25px">
+                <button class="btn btn-danger center-block"><a href="{{ path('my_photos') }}">MY PHOTOS</a></button>
+            </div>
         </div>
+
     </div>
 {% endblock %}

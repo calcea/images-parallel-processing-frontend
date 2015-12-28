@@ -41,6 +41,19 @@ class PhotoController extends Controller
         return $this->render('ImageBundle:Default:index.html.twig',array('form' => $form->createView()));
     }
 
+    public function myPhotosAction(Request $request)
+    {
+        $userId = $this->getUserId($request);
+        $dynamo = $dynamo = new Dynamo(new PhotoItemBuilder(),'ImageProcessingDB');
+        $filters = array(
+                'columnName' => 'UserID',
+                'value' => $userId,
+                'operator' => Dynamo::EQUAL_OPERATOR
+        );
+        $photos = $dynamo->getItems(array($filters));
+        return $this->render('ImageBundle:Default:my_photos.html.twig',array('photos' => $photos));
+    }
+
     /**
      * This function add to s3 photo and return s3 url for photo.
      *
@@ -56,7 +69,7 @@ class PhotoController extends Controller
 
         $s3Url = $s3->uploadPhoto($photoPath,$photoId);
         //TODO permission denied
-//        unlink(realpath($photoPath));
+        //unlink(realpath($photoPath));
         return $s3Url;
     }
 
