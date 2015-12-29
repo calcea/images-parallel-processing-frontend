@@ -9,6 +9,9 @@ namespace Cloud\AmazonBundle\Entity\Dynamo;
  */
 class PhotoItemBuilder extends DataBuilderAbstract
 {
+    const PRIMARY_PARTITION_KEY = 'UserID';
+    const PRIMARY_SORT_KEY = 'PhotoID';
+
     protected $itemMappings = array(
         'user_id' => array("dynamoName" => 'UserID', 'type' => 'S'),
         'photo_id' => array("dynamoName" => 'PhotoID', 'type' => 'S'),
@@ -39,6 +42,34 @@ class PhotoItemBuilder extends DataBuilderAbstract
     public function getColumnsTypes()
     {
         return $this->columnsTypes;
+    }
+
+    /**
+     * $dataToUpdate = array(
+     * 'Filename' => "asd.jpg"
+     * )
+     * @param $userId
+     * @param $photoId
+     * @param $dataToUpdate
+     */
+    public function buildUpdateRequest($userId, $photoId, $dataToUpdate)
+    {
+        $request = array(
+            'Key' => array(
+                self::PRIMARY_PARTITION_KEY => array($this->columnsTypes[self::PRIMARY_PARTITION_KEY] => $userId),
+                self::PRIMARY_SORT_KEY => array($this->columnsTypes[self::PRIMARY_SORT_KEY] => $photoId)
+            ),
+            'AttributeUpdates' => array()
+        );
+        $updates = array();
+        foreach ($dataToUpdate as $key => $value) {
+            $updates[$key] = array(
+                'Value' => array($this->columnsTypes[$key] => $value),
+                'Action' => 'PUT'
+            );
+        }
+        $request['AttributeUpdates'] = $updates;
+        return $request;
     }
 
 }

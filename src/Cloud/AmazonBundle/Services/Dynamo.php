@@ -151,4 +151,20 @@ class Dynamo
         }
         return $items;
     }
+
+    /**
+     * Update photo item
+     *
+     * @param $userId
+     * @param $photoId
+     * @param array $dataToUpdate
+     * @return \Aws\Result
+     */
+    public function updatePhotoItem($userId, $photoId, array $dataToUpdate)
+    {
+        $request = $this->builder->buildUpdateRequest($userId, $photoId, $dataToUpdate);
+        $request['TableName'] = $this->tableName;
+        return $this->client->updateItem($request);
+
+    }
 }
