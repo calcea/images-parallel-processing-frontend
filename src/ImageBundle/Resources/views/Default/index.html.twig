@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <div class="row">
+        <div class="col-md-4 col-md-offset-4">
+            {{ form_start(form) }}
+                {{ form_row(form.imageUpload, { attr: {class :"form-control " } }) }}
+                <br>
+                {{ form_row (form.submit, { attr: {class :"form-control btn btn-danger" } }) }}
+            {{ form_end(form) }}
+            <div style="padding-top: 25px">
+                <button class="btn btn-danger center-block"><a href="{{ path('my_photos') }}">MY PHOTOS</a></button>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

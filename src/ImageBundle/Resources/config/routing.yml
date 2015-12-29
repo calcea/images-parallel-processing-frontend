@@ -1,0 +1,6 @@
+upload_photo:
+    path:     /upload-photo
+    defaults: { _controller: ImageBundle:Photo:upload }
+my_photos:
+    path:     /my-photos
+    defaults: { _controller: ImageBundle:Photo:myPhotos }

@@ -1,6 +1,10 @@
 cloud_amazon_homepage:
     path:     /cloud
     defaults: { _controller: CloudAmazonBundle:Default:index }
+cloud_amazon_homepage_upload:
+    path:     /cloud-upload
+    defaults: { _controller: CloudAmazonBundle:Default:uploadFile }
 cloud_amazon_test:
     path:     /test
     defaults: { _controller: CloudAmazonBundle:Default:test }
+

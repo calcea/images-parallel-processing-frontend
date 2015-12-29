@@ -23,7 +23,8 @@
         "knplabs/gaufrette":                    "dev-master",
         "knplabs/knp-gaufrette-bundle":         "dev-master",
         "amazonwebservices/aws-sdk-for-php":    "dev-master",
-        "aws/aws-sdk-php": "^3.11"
+        "aws/aws-sdk-php": "^3.11",
+        "twbs/bootstrap": "^3.3"
     },
     "require-dev": {
         "sensio/generator-bundle": "~3.0",
@@ -36,7 +37,8 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget",
+            "php -r \"if (!file_exists('web/bundles/bootstrap/')){  symlink(__DIR__.'/vendor/twbs/bootstrap/dist', 'web/bundles/bootstrap');}\""
         ],
         "post-update-cmd": [
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
@@ -44,7 +46,8 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget",
+            "php -r \"if (!file_exists('web/bundles/bootstrap/')){  symlink(__DIR__.'/vendor/twbs/bootstrap/dist', 'web/bundles/bootstrap');}\""
         ]
     },
     "config": {
