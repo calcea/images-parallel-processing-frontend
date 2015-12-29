@@ -122,7 +122,6 @@ class PhotoController extends Controller
             $response = new Response();
             $userIdValue = md5(rand(999, 10000) . microtime() . "12345678910");
             $response->headers->setCookie(new Cookie('USER_ID', $userIdValue, time() + (3600 * 48)));
-            dump($response);
             $response->send();
             return $userIdValue;
         }

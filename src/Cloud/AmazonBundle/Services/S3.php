@@ -3,7 +3,8 @@ namespace Cloud\AmazonBundle\Services;
 
 use Aws\S3\S3Client;
 
-class S3{
+class S3
+{
 
     const BUCKET_NAME = 'image.processing.s3';
 
@@ -23,19 +24,20 @@ class S3{
             ));
     }
 
-    public function uploadPhoto($path,$photoId )
+    public function uploadPhoto($path, $photoId)
     {
         $result = $this->client->putObject(array(
-            'Bucket'     => self::BUCKET_NAME,
-            'Key'        => $photoId,
-            'Body'       => fopen($path, 'r'),
-            'ACL'          => 'public-read'
+            'Bucket' => self::BUCKET_NAME,
+            'Key' => $photoId,
+            'Body' => fopen($path, 'r'),
+            'ACL' => 'public-read'
         ));
 
         return $result["ObjectURL"];
     }
 
-    public function deletePhoto($photoId){
+    public function deletePhoto($photoId)
+    {
         $result = $this->client->deleteObject(array(
             'Bucket' => self::BUCKET_NAME,
             'Key' => $photoId
@@ -44,8 +46,9 @@ class S3{
         return $result;
     }
 
-    public function getPhoto($photoId){
-       $result = $this->client->getObject(array(
+    public function getPhoto($photoId)
+    {
+        $result = $this->client->getObject(array(
             'Bucket' => self::BUCKET_NAME,
             'Key' => $photoId
         ));
