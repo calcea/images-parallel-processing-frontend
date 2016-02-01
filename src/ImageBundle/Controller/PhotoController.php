@@ -23,35 +23,38 @@ class PhotoController extends Controller
 
     public function uploadAction(Request $request)
     {
+        set_time_limit(0);
         $form = $this->createForm(new ImageUploadForm());
-        $form->add('submit','submit');
+        $form->add('submit', 'submit');
 
         $form->handleRequest($request);
-        if($form->isValid()){
-            $userId =$this->getUserId($request);
-            $photoId = md5(rand(999, 10000) . microtime() . "12345678910");
+        if ($form->isValid()) {
+            $userId = $this->getUserId($request);
             $uploadedFile = $form->getData()['imageUpload'];
+            foreach ($uploadedFile as $item) {
+                $photoId = md5(rand(999, 10000) . microtime() . "12345678910");
 
-            $s3Url = $this->addToS3($uploadedFile,$photoId);
-            $this->addToQueue($userId,$photoId);
-            $this->addToDynamo($uploadedFile,$userId,$photoId,$s3Url);
+                $s3Url = $this->addToS3($item, $photoId);
+                $this->addToQueue($userId, $photoId);
+                $this->addToDynamo($item, $userId, $photoId, $s3Url);
+            }
 
         }
 
-        return $this->render('ImageBundle:Default:index.html.twig',array('form' => $form->createView()));
+        return $this->render('ImageBundle:Default:index.html.twig', array('form' => $form->createView()));
     }
 
     public function myPhotosAction(Request $request)
     {
         $userId = $this->getUserId($request);
-        $dynamo = $dynamo = new Dynamo(new PhotoItemBuilder(),'ImageProcessingDB');
+        $dynamo = $dynamo = new Dynamo(new PhotoItemBuilder(), 'ImageProcessingDB');
         $filters = array(
-                'columnName' => 'UserID',
-                'value' => $userId,
-                'operator' => Dynamo::EQUAL_OPERATOR
+            'columnName' => 'UserID',
+            'value' => $userId,
+            'operator' => Dynamo::EQUAL_OPERATOR
         );
         $photos = $dynamo->getItems(array($filters));
-        return $this->render('ImageBundle:Default:my_photos.html.twig',array('photos' => $photos));
+        return $this->render('ImageBundle:Default:my_photos.html.twig', array('photos' => $photos));
     }
 
     /**
@@ -61,13 +64,14 @@ class PhotoController extends Controller
      * @param $photoId
      * @return string
      */
-    protected function addToS3(UploadedFile $uploadedFile, $photoId){
+    protected function addToS3(UploadedFile $uploadedFile, $photoId)
+    {
         $s3 = new S3();
 
         $uploadedFile->move("./photo", $photoId . "." . $uploadedFile->getClientOriginalExtension());
-        $photoPath = "./photo/".$photoId.".".$uploadedFile->getClientOriginalExtension();
+        $photoPath = "./photo/" . $photoId . "." . $uploadedFile->getClientOriginalExtension();
 
-        $s3Url = $s3->uploadPhoto($photoPath,$photoId);
+        $s3Url = $s3->uploadPhoto($photoPath, $photoId);
         //TODO permission denied
         //unlink(realpath($photoPath));
         return $s3Url;
@@ -79,9 +83,10 @@ class PhotoController extends Controller
      * @param $userId
      * @param $photoId
      */
-    protected function addToQueue($userId,$photoId){
+    protected function addToQueue($userId, $photoId)
+    {
         $queue = new Queue();
-        $queue->sendMessage($userId.self::SEPARATOR.$photoId);
+        $queue->sendMessage($userId . self::SEPARATOR . $photoId);
     }
 
     /**
@@ -92,15 +97,16 @@ class PhotoController extends Controller
      * @param $photoId
      * @param $s3Url
      */
-    protected function addToDynamo(UploadedFile $uploadedFile,$userId,$photoId,$s3Url){
-        $photoItem = array (
-            'user_id' => (string) $userId,
-            'photo_id' => (string) $photoId,
-            'path_to_s3' => (string) $s3Url,
-            'filename' => (string) ($photoId . "." . $uploadedFile->getClientOriginalExtension()),
+    protected function addToDynamo(UploadedFile $uploadedFile, $userId, $photoId, $s3Url)
+    {
+        $photoItem = array(
+            'user_id' => (string)$userId,
+            'photo_id' => (string)$photoId,
+            'path_to_s3' => (string)$s3Url,
+            'filename' => (string)($photoId . "." . $uploadedFile->getClientOriginalExtension()),
         );
 
-        $dynamo = new Dynamo(new PhotoItemBuilder(),'ImageProcessingDB');
+        $dynamo = new Dynamo(new PhotoItemBuilder(), 'ImageProcessingDB');
         $dynamo->addItem($photoItem);
     }
 
@@ -112,13 +118,14 @@ class PhotoController extends Controller
      * @param Request $request
      * @return string
      */
-    protected function getUserId(Request $request){
+    protected function getUserId(Request $request)
+    {
 
         $currentCookies = $request->cookies;
 
-        if($currentCookies->has('USER_ID')){
+        if ($currentCookies->has('USER_ID')) {
             return $currentCookies->get(('USER_ID'));
-        }else{
+        } else {
             $response = new Response();
             $userIdValue = md5(rand(999, 10000) . microtime() . "12345678910");
             $response->headers->setCookie(new Cookie('USER_ID', $userIdValue, time() + (3600 * 48)));
